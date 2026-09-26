@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DLS 19 Web Tribute</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&display=swap');
+        body { font-family: 'Rajdhani', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col select-none">
+
+    <!-- Top Navigation / Status Bar -->
+    <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-50 px-4 py-3 flex flex-wrap justify-between items-center shadow-lg">
+        <div class="flex items-center space-x-3">
+            <div class="bg-blue-600 text-white font-black px-3 py-1 rounded text-xl tracking-wider shadow-inner">DLS '19</div>
+            <div>
+                <h1 id="headerTeamName" class="font-bold text-lg leading-tight">Dream FC</h1>
+                <p class="text-xs text-slate-400">Academy Division</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-6 mt-2 sm:mt-0">
+            <div class="flex items-center space-x-2 bg-slate-950 px-3 py-1.5 rounded-full border border-slate-800">
+                <span class="text-yellow-400 font-bold text-lg">🪙</span>
+                <span id="coinDisplay" class="font-bold text-yellow-400 tracking-wide text-lg">1,500</span>
+            </div>
+            <div class="flex items-center space-x-2 bg-slate-950 px-3 py-1.5 rounded-full border border-slate-800">
+                <span class="text-blue-400 font-bold text-xs uppercase">OVR</span>
+                <span id="ovrDisplay" class="font-bold text-blue-400 tracking-wide text-lg">82</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="bg-slate-900/80 backdrop-blur border-b border-slate-800 flex justify-around sm:justify-start sm:space-x-4 px-2 py-2">
+        <button onclick="switchTab('hub')" id="nav-hub" class="tab-btn px-4 py-2 rounded-lg font-bold text-sm tracking-wide transition bg-blue-600 text-white shadow">My Club</button>
+        <button onclick="switchTab('market')" id="nav-market" class="tab-btn px-4 py-2 rounded-lg font-bold text-sm tracking-wide transition text-slate-400 hover:text-white hover:bg-slate-800">Transfer Market</button>
+        <button onclick="switchTab('match')" id="nav-match" class="tab-btn px-4 py-2 rounded-lg font-bold text-sm tracking-wide transition text-slate-400 hover:text-white hover:bg-slate-800">Play Match</button>
+        <button onclick="switchTab('stadium')" id="nav-stadium" class="tab-btn px-4 py-2 rounded-lg font-bold text-sm tracking-wide transition text-slate-400 hover:text-white hover:bg-slate-800">Stadium & Kits</button>
+    </nav>
+
+    <!-- Content Area -->
+    <main class="flex-grow p-4 max-w-6xl mx-auto w-full">
+
+        <!-- TAB 1: MY CLUB -->
+        <section id="tab-hub" class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl shadow">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Club Details</h3>
+                    <p id="clubNameDisplay" class="text-xl font-black text-white">Dream FC</p>
+                    <p id="stadiumNameDisplay" class="text-sm text-slate-400 mt-1">Global Stadium (Cap: 15,000)</p>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl shadow flex flex-col justify-between">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Manager Record</h3>
+                    <div class="flex justify-between text-sm font-semibold">
+                        <span class="text-green-400">Wins: <span id="statWins">0</span></span>
+                        <span class="text-yellow-400">Draws: <span id="statDraws">0</span></span>
+                        <span class="text-red-400">Losses: <span id="statLosses">0</span></span>
+                    </div>
+                </div>
+                <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl shadow flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Quick Action</h3>
+                        <p class="text-sm font-medium text-slate-200">Ready for next fixture?</p>
+                    </div>
+                    <button onclick="switchTab('match')" class="bg-green-600 hover:bg-green-500 text-white font-bold px-4 py-2 rounded-lg transition shadow">Play Match</button>
+                </div>
+            </div>
+
+            <!-- Squad Roster Grid -->
+            <div>
+                <h2 class="text-lg font-bold text-slate-200 mb-3 flex items-center justify-between">
+                    <span>Squad Roster (Starting XI)</span>
+                    <span class="text-xs text-slate-400 font-normal">Manage players signed to your club</span>
+                </h2>
+                <div id="squadGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: TRANSFER MARKET -->
+        <section id="tab-market" class="hidden space-y-6">
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg font-bold text-white">Transfer Market</h2>
+                    <p class="text-xs text-slate-400">Sign legendary 2019-era players to boost your team rating</p>
+                </div>
+                <button onclick="refreshMarket()" class="bg-slate-800 hover:bg-slate-700 text-xs font-bold px-3 py-2 rounded border border-slate-700 transition">Refresh Market</button>
+            </div>
+            <div id="marketGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Populated via JS -->
+            </div>
+        </section>
+
+        <!-- TAB 3: PLAY MATCH -->
+        <section id="tab-match" class="hidden space-y-6">
+            <div id="matchSetup" class="bg-slate-900 border border-slate-800 p-6 rounded-xl max-w-xl mx-auto text-center space-y-4">
+                <h2 class="text-2xl font-black text-white">Select Opponent</h2>
+                <p class="text-sm text-slate-400">Choose your next division fixture and claim coin rewards upon victory.</p>
+                <div class="flex justify-center space-x-4">
+                    <button onclick="startMatch('Division Rival FC', 100)" class="bg-blue-600 hover:bg-blue-500 font-bold px-6 py-3 rounded-lg transition shadow flex-1">
+                        Division Match <span class="block text-xs font-normal text-blue-200">Reward: +100 Coins</span>
+                    </button>
+                    <button onclick="startMatch('Global Elite Cup Final', 250)" class="bg-amber-600 hover:bg-amber-500 font-bold px-6 py-3 rounded-lg transition shadow flex-1">
+                        Cup Final <span class="block text-xs font-normal text-amber-200">Reward: +250 Coins</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="matchLive" class="hidden bg-slate-900 border border-slate-800 rounded-xl max-w-2xl mx-auto overflow-hidden shadow-2xl">
+                <!-- Scoreboard -->
+                <div class="bg-slate-950 p-6 border-b border-slate-800 flex justify-between items-center">
+                    <div class="text-center flex-1">
+                        <h3 id="matchTeamHome" class="font-bold text-lg">Dream FC</h3>
+                        <p class="text-xs text-slate-400">Home</p>
+                    </div>
+                    <div class="bg-blue-600 text-white font-black px-5 py-2 rounded-xl text-2xl tracking-widest shadow-inner">
+                        <span id="scoreHome">0</span> - <span id="scoreAway">0</span>
+                    </div>
+                    <div class="text-center flex-1">
+                        <h3 id="matchTeamAway" class="font-bold text-lg">Opponent FC</h3>
+                        <p class="text-xs text-slate-400">Away</p>
+                    </div>
+                </div>
+                <!-- Commentary Box -->
+                <div class="p-6 space-y-4">
+                    <div class="flex justify-between items-center text-sm font-bold text-slate-400 border-b border-slate-800 pb-2">
+                        <span>MATCH SIMULATOR</span>
+                        <span id="matchMinute" class="text-blue-400">0'</span>
+                    </div>
+                    <div id="commentaryLog" class="h-40 overflow-y-auto space-y-2 text-sm text-slate-300 pr-2 font-mono bg-slate-950 p-4 rounded border border-slate-800">
+                        <p class="text-slate-500">Match is about to kick off...</p>
+                    </div>
+                    <div id="matchResultActions" class="hidden text-center pt-2">
+                        <button onclick="endMatch()" class="bg-green-600 hover:bg-green-500 text-white font-bold px-6 py-2.5 rounded-lg transition shadow">Continue to Hub</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: STADIUM & KITS -->
+        <section id="tab-stadium" class="hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Stadium Upgrade -->
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
+                    <h2 class="text-lg font-bold text-white">Stadium Expansion</h2>
+                    <p class="text-sm text-slate-400">Increase your stadium capacity to boost club prestige.</p>
+                    <div class="bg-slate-950 p-4 rounded border border-slate-800 flex justify-between items-center">
+                        <div>
+                            <p id="currentStadiumTier" class="font-bold text-white">Global Stadium (15,000 Cap)</p>
+                            <p class="text-xs text-slate-400 mt-0.5">Upgrade Cost: 500 Coins</p>
+                        </div>
+                        <button onclick="upgradeStadium()" class="bg-blue-600 hover:bg-blue-500 text-sm font-bold px-4 py-2 rounded transition">Upgrade</button>
+                    </div>
+                </div>
+                <!-- Kit Customizer -->
+                <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-4">
+                    <h2 class="text-lg font-bold text-white">Kit Customization</h2>
+                    <p class="text-sm text-slate-400">Select your team primary color theme.</p>
+                    <div class="flex space-x-3 pt-2">
+                        <button onclick="setTeamColor('blue', 'bg-blue-600')" class="w-10 h-10 rounded-full bg-blue-600 border-2 border-white/20 hover:scale-105 transition"></button>
+                        <button onclick="setTeamColor('red', 'bg-red-600')" class="w-10 h-10 rounded-full bg-red-600 border-2 border-white/20 hover:scale-105 transition"></button>
+                        <button onclick="setTeamColor('emerald', 'bg-emerald-600')" class="w-10 h-10 rounded-full bg-emerald-600 border-2 border-white/20 hover:scale-105 transition"></button>
+                        <button onclick="setTeamColor('purple', 'bg-purple-600')" class="w-10 h-10 rounded-full bg-purple-600 border-2 border-white/20 hover:scale-105 transition"></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Game State & LocalStorage
+        let gameState = JSON.parse(localStorage.getItem('dls19_save')) || {
+            coins: 1500,
+            teamName: "Dream FC",
+            stadiumName: "Global Stadium",
+            stadiumCapacity: 15000,
+            primaryColor: "bg-blue-600",
+            stats: { wins: 0, draws: 0, losses: 0 },
+            squad: [
+                { name: "G. Buffon", pos: "GK", ovr: 88, price: 0 },
+                { name: "Sergio Ramos", pos: "DEF", ovr: 90, price: 0 },
+                { name: "G. Chiellini", pos: "DEF", ovr: 87, price: 0 },
+                { name: "L. Modric", pos: "MID", ovr: 89, price: 0 },
+                { name: "T. Kroos", pos: "MID", ovr: 88, price: 0 },
+                { name: "C. Ronaldo", pos: "FWD", ovr: 94, price: 0 },
+                { name: "L. Messi", pos: "FWD", ovr: 95, price: 0 }
+            ],
+            market: [
+                { id: 1, name: "Neymar Jr", pos: "FWD", ovr: 92, price: 1200 },
+                { id: 2, name: "K. De Bruyne", pos: "MID", ovr: 91, price: 1100 },
+                { id: 3, name: "V. Van Dijk", pos: "DEF", ovr: 90, price: 1000 },
+                { id: 4, name: "M. Salah", pos: "FWD", ovr: 90, price: 950 },
+                { id: 5, name: "P. Pogba", pos: "MID", ovr: 87, price: 750 },
+                { id: 6, name: "N. Kanté", pos: "MID", ovr: 89, price: 900 }
+            ]
+        };
+
+        function saveGame() {
+            localStorage.setItem('dls19_save', JSON.stringify(gameState));
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('coinDisplay').innerText = gameState.coins.toLocaleString();
+            document.getElementById('headerTeamName').innerText = gameState.teamName;
+            document.getElementById('clubNameDisplay').innerText = gameState.teamName;
+            document.getElementById('stadiumNameDisplay').innerText = `${gameState.stadiumName} (Cap: ${gameState.stadiumCapacity.toLocaleString()})`;
+            document.getElementById('currentStadiumTier').innerText = `${gameState.stadiumName} (${gameState.stadiumCapacity.toLocaleString()} Cap)`;
+            
+            document.getElementById('statWins').innerText = gameState.stats.wins;
+            document.getElementById('statDraws').innerText = gameState.stats.draws;
+            document.getElementById('statLosses').innerText = gameState.stats.losses;
+
+            // Calculate Team OVR
+            if (gameState.squad.length > 0) {
+                let totalOvr = gameState.squad.reduce((sum, p) => sum + p.ovr, 0);
+                document.getElementById('ovrDisplay').innerText = Math.round(totalOvr / gameState.squad.length);
+            }
+
+            renderSquad();
+            renderMarket();
+        }
+
+        function switchTab(tabId) {
+            ['hub', 'market', 'match', 'stadium'].forEach(id => {
+                document.getElementById(`tab-${id}`).classList.add('hidden');
+                document.getElementById(`nav-${id}`).className = "tab-btn px-4 py-2 rounded-lg font-bold text-sm tracking-wide transition text-slate-400 hover:text-white hover:bg-slate-800";
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.getElementById(`nav-${tabId}`).className = "tab-btn px-4 py-2 rounded-lg font-bold text-sm tracking-wide transition bg-blue-600 text-white shadow";
+        }
+
+        function renderSquad() {
+            const grid = document.getElementById('squadGrid');
+            grid.innerHTML = '';
+            gameState.squad.forEach(player => {
+                grid.innerHTML += `
+                    <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl flex justify-between items-center shadow">
+                        <div>
+                            <span class="text-xs font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 mr-2">${player.pos}</span>
+                            <span class="font-bold text-white text-base">${player.name}</span>
+                        </div>
+                        <div class="bg-slate-950 px-3 py-1 rounded border border-slate-800 text-blue-400 font-bold text-sm">
+                            ${player.ovr} OVR
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderMarket() {
+            const grid = document.getElementById('marketGrid');
+            grid.innerHTML = '';
+            if (gameState.market.length === 0) {
+                grid.innerHTML = `<p class="text-slate-500 col-span-full text-center py-8">Transfer market is currently empty. Click refresh to scout new players!</p>`;
+                return;
+            }
+            gameState.market.forEach(player => {
+                grid.innerHTML += `
+                    <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl flex flex-col justify-between shadow space-y-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-xs font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300">${player.pos}</span>
+                                <h3 class="font-bold text-lg text-white mt-1">${player.name}</h3>
+                            </div>
+                            <div class="bg-blue-600/20 border border-blue-500/30 text-blue-400 px-3 py-1 rounded font-bold text-sm">
+                                ${player.ovr} OVR
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center pt-2 border-t border-slate-800">
+                            <span class="text-yellow-400 font-bold">🪙 ${player.price.toLocaleString()}</span>
+                            <button onclick="buyPlayer(${player.id})" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-1.5 rounded transition text-sm shadow">Sign Player</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function buyPlayer(id) {
+            const playerIndex = gameState.market.findIndex(p => p.id === id);
+            if (playerIndex === -1) return;
+            const player = gameState.market[playerIndex];
+
+            if (gameState.coins >= player.price) {
+                gameState.coins -= player.price;
+                gameState.squad.push(player);
+                gameState.market.splice(playerIndex, 1);
+                saveGame();
+            } else {
+                alert("Not enough coins to sign this player!");
+            }
+        }
+
+        function refreshMarket() {
+            const pool = [
+                { name: "Kylian Mbappé", pos: "FWD", ovr: 92, price: 1300 },
+                { name: "Eden Hazard", pos: "FWD", ovr: 91, price: 1150 },
+                { name: "Marcelo", pos: "DEF", ovr: 88, price: 800 },
+                { name: "Casemiro", pos: "MID", ovr: 88, price: 850 },
+                { name: "Thibaut Courtois", pos: "GK", ovr: 89, price: 950 },
+                { name: "Antoine Griezmann", pos: "FWD", ovr: 89, price: 900 }
+            ];
+            gameState.market = pool.sort(() => 0.5 - Math.random()).slice(0, 4);
+            saveGame();
+        }
+
+        // Match Engine Simulation
+        let currentMatchReward = 100;
+        let matchInterval = null;
+
+        function startMatch(opponentName, reward) {
+            currentMatchReward = reward;
+            document.getElementById('matchSetup').classList.add('hidden');
+            document.getElementById('matchLive').classList.remove('hidden');
+            document.getElementById('matchTeamAway').innerText = opponentName;
+            document.getElementById('scoreHome').innerText = '0';
+            document.getElementById('scoreAway').innerText = '0';
+            document.getElementById('matchMinute').innerText = '0\'';
+            document.getElementById('matchResultActions').classList.add('hidden');
+            
+            const log = document.getElementById('commentaryLog');
+            log.innerHTML = `<p class="text-slate-400">Referee blows the whistle! Match is underway against ${opponentName}...</p>`;
+
+            let minute = 0;
+            let homeGoals = 0;
+            let awayGoals = 0;
+
+            if (matchInterval) clearInterval(matchInterval);
+
+            matchInterval = setInterval(() => {
+                minute += Math.floor(Math.random() * 8) + 5;
+                if (minute >= 90) {
+                    minute = 90;
+                    clearInterval(matchInterval);
+                    finishMatchSimulation(homeGoals, awayGoals);
+                }
+                document.getElementById('matchMinute').innerText = minute + "'";
+
+                // Match events simulation
+                const eventRoll = Math.random();
+                if (eventRoll < 0.35) {
+                    homeGoals++;
+                    document.getElementById('scoreHome').innerText = homeGoals;
+                    log.innerHTML += `<p class="text-green-400 font-semibold">${minute}' - GOAL! Clinical finish by Dream FC!</p>`;
+                } else if (eventRoll > 0.70 && awayGoals < homeGoals) {
+                    awayGoals++;
+                    document.getElementById('scoreAway').innerText = awayGoals;
+                    log.innerHTML += `<p class="text-red-400 font-semibold">${minute}' - Goal for ${opponentName}...</p>`;
+                } else {
+                    const comments = [
+                        `${minute}' - Midfield battle as both teams fight for possession.`,
+                        `${minute}' - Great through ball, but intercepted by the defense.`,
+                        `${minute}' - Powerful shot flies just wide of the goal!`,
+                        `${minute}' - Excellent sliding tackle to break up the counter-attack.`
+                    ];
+                    log.innerHTML += `<p class="text-slate-300">${comments[Math.floor(Math.random() * comments.length)]}</p>`;
+                }
+                log.scrollTop = log.scrollHeight;
+            }, 1000);
+        }
+
+        function finishMatchSimulation(home, away) {
+            const log = document.getElementById('commentaryLog');
+            if (home > away) {
+                gameState.stats.wins++;
+                gameState.coins += currentMatchReward;
+                log.innerHTML += `<p class="text-green-400 font-bold mt-2">FULL TIME: Victory! You earned 🪙 +${currentMatchReward} coins.</p>`;
+            } else if (home === away) {
+                gameState.stats.draws++;
+                gameState.coins += Math.floor(currentMatchReward / 3);
+                log.innerHTML += `<p class="text-yellow-400 font-bold mt-2">FULL TIME: Draw. Points shared.</p>`;
+            } else {
+                gameState.stats.losses++;
+                log.innerHTML += `<p class="text-red-400 font-bold mt-2">FULL TIME: Defeat. Dust yourselves off and try again.</p>`;
+            }
+            saveGame();
+            document.getElementById('matchResultActions').classList.remove('hidden');
+        }
+
+        function endMatch() {
+            document.getElementById('matchLive').classList.add('hidden');
+            document.getElementById('matchSetup').classList.remove('hidden');
+            switchTab('hub');
+        }
+
+        function upgradeStadium() {
+            if (gameState.coins >= 500) {
+                gameState.coins -= 500;
+                gameState.stadiumCapacity += 5000;
+                gameState.stadiumName = gameState.stadiumCapacity >= 30000 ? "Grand Arena" : "Elite Stadium";
+                saveGame();
+            } else {
+                alert("You need 500 coins to upgrade your stadium!");
+            }
+        }
+
+        function setTeamColor(colorName, className) {
+            gameState.primaryColor = className;
+            saveGame();
+        }
+
+        // Initialize App on Load
+        updateUI();
+    </script>
+</body>
+</html>
